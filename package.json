@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel ./src -d ./dist",
     "build-demo": "npm run build && cd ./demo && npm run build",
+    "install-all": "npm install && cd ./demo && npm install",
     "test": "mocha ./test --compilers js:babel-register"
   },
   "keywords": [
@@ -29,6 +30,7 @@
   },
   "dependencies": {
     "colors": "^1.1.2",
+    "shift-codegen": "^5.0.2",
     "shift-parser": "^5.0.1"
   }
 }
