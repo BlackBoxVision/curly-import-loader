@@ -26,5 +26,9 @@
     "babel-preset-react-hmre": "^1.1.1",
     "babel-preset-stage-0": "^6.5.0",
     "mocha": "^2.5.3"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "shift-parser": "^5.0.1"
   }
 }
