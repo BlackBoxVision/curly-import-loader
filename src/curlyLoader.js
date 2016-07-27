@@ -2,9 +2,9 @@ import ParserManager from './ParserManager';
 
 const optimizeCurlyImports = (file, callback) => {
 
-    let importedModules = ParserManager.getImportModules(file);
 
-    console.log("Imports to be processed : \n".grey.underline + JSON.stringify(importedModules));
+    ParserManager.modifyImports(file, {});
+
 
     return callback(null, file);
 }
