@@ -17,24 +17,6 @@ const createDefaultBind = (bindName, newModuleName) => ({
     moduleSpecifier: newModuleName
 });
 
-const sanitizeImports = (imports) => {
-    if(!imports) throw new Error("There are no imports to sanitize...");
-
-    let shouldRemove = [];
-    imports.forEach((imp, index) => {
-        if(!imp.defaultBinding)
-            shouldRemove.push(index);
-        else
-            imp.namedImports = [];
-
-    });
-
-    shouldRemove.forEach(i => {
-        imports.splice(i, 1);
-    })
-
-
-};
 
 class ParserManager {
 
@@ -87,6 +69,26 @@ class ParserManager {
         });
     }
 
+    static _sanitizeImportsAndSaveBindings(parsedData, defaultBindings) {
+        let newParsedData = {...parsedData};
+
+        newParsedData.items.forEach((i, index) => {
+            if(i.type === ShiftConsts.IMPORT) {
+                if(!i.defaultBinding)
+                    newParsedData.items.splice(index, 1);
+                else
+                    i.namedImports = [];
+            }
+        })
+
+        defaultBindings.forEach(defBind => {
+            newParsedData.items.unshift(defBind);
+
+        })
+
+        return newParsedData;
+    }
+
     static modifyImports(code, importDataMap) {
         if(!code) throw new Error("There is no code to modify...");
         if(!importDataMap) throw new Error("There is no specified which imports should be changed...");
@@ -100,23 +102,11 @@ class ParserManager {
 
         console.log("Changed Import: \n".gray + JSON.stringify(defaultBindings));
 
-        parsedData.items.forEach((i, index) => {
-            if(i.type === ShiftConsts.IMPORT) {
-                if(!i.defaultBinding)
-                    parsedData.items.splice(index, 1);
-                else
-                    i.namedImports = [];
-            }
-        })
+        let newParserData = this._sanitizeImportsAndSaveBindings(parsedData, defaultBindings)
 
-        defaultBindings.forEach(defBind => {
-            parsedData.items.unshift(defBind);
+        console.log("New Parsed Data: \n".red + JSON.stringify(newParserData));
 
-        })
-
-        console.log("New Parsed Data: \n".red + JSON.stringify(parsedData));
-
-        return parsedData;
+        return newParserData;
     }
 
     static generateCode(parsedData) {
