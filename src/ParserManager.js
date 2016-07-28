@@ -15,7 +15,26 @@ const createDefaultBind = (bindName, newModuleName) => ({
     },
     namedImports: [],
     moduleSpecifier: newModuleName
-})
+});
+
+const sanitizeImports = (imports) => {
+    if(!imports) throw new Error("There are no imports to sanitize...");
+
+    let shouldRemove = [];
+    imports.forEach((imp, index) => {
+        if(!imp.defaultBinding)
+            shouldRemove.push(index);
+        else
+            imp.namedImports = [];
+
+    });
+
+    shouldRemove.forEach(i => {
+        imports.splice(i, 1);
+    })
+
+
+};
 
 class ParserManager {
 
@@ -32,7 +51,7 @@ class ParserManager {
         return parsedData;
     }
 
-    static getImportModules(parsedData) {
+    static _getImportModules(parsedData) {
         if(!parsedData) throw new Error("There is no parse data...");
 
         let importModules = parsedData.items.filter(item => item.type === ShiftConsts.IMPORT);
@@ -60,23 +79,35 @@ class ParserManager {
         return defaultBindings;
     }
 
+    static _getNamedImports(imports) {
+        return imports.map(data => {
+            return data.namedImports;
+            //data.namedImports = []; // Clean namedImports, those will be replaced by absolute!
+            //return nameImport;
+        });
+    }
+
     static modifyImports(code, importDataMap) {
         if(!code) throw new Error("There is no code to modify...");
         if(!importDataMap) throw new Error("There is no specified which imports should be changed...");
 
         let parsedData = this.parseData(code);
-        let imports = this.getImportModules(parsedData);
-        let namedImports = imports.map(data => {
-            let nameImport = [...data.namedImports];
-            data.namedImports = []; // Clean namedImports, those will be replaced by absolute!
-            return nameImport;
-        });
+        let imports = this._getImportModules(parsedData);
+        let namedImports = this._getNamedImports(imports);
 
+        // Generate the defaultBinding imports which will replace the namedImports (Curly Imports) in the parsedData
         let defaultBindings = this._createDefaultBindingsFromNamedImports(namedImports, importDataMap);
 
         console.log("Changed Import: \n".gray + JSON.stringify(defaultBindings));
 
-        console.log(JSON.stringify(defaultBindings));
+        parsedData.items.forEach((i, index) => {
+            if(i.type === ShiftConsts.IMPORT) {
+                if(!i.defaultBinding)
+                    parsedData.items.splice(index, 1);
+                else
+                    i.namedImports = [];
+            }
+        })
 
         defaultBindings.forEach(defBind => {
             parsedData.items.unshift(defBind);

@@ -30,7 +30,9 @@
   },
   "dependencies": {
     "colors": "^1.1.2",
+    "shift-ast": "^4.0.0",
     "shift-codegen": "^5.0.2",
-    "shift-parser": "^5.0.1"
+    "shift-parser": "^5.0.1",
+    "shift-traverse": "^1.0.1"
   }
 }
