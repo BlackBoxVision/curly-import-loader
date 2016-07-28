@@ -1,4 +1,6 @@
-import ParserManager from './ParserManager';
+import ParserManager from './manager/ParserManager';
+
+if(process.env.NODE_ENV === "production") console.log = () => {};
 
 const optimizeCurlyImports = (file, callback) => {
 
