@@ -2,10 +2,15 @@ import ParserManager from './ParserManager';
 
 const optimizeCurlyImports = (file, callback) => {
 
+    let importMap = {
+        PropTypes: "react/lib/ReactPropTypes",
+        Component: "react/lib/ReactComponent"
+    }
 
-    ParserManager.modifyImports(file, {});
+    let parsedData = ParserManager.modifyImports(file, importMap);
+    let newFile = ParserManager.generateCode(parsedData);
 
-
+    console.log("File \n" + newFile );
     return callback(null, file);
 }
 
