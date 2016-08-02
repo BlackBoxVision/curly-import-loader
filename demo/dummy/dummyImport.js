@@ -1,5 +1,5 @@
-import React,  { Component } from 'react';
-import { PropTypes } from 'react';
+import  { Component } from 'react';
+import React, { PropTypes } from 'react';
 
 const Dummy = () => (
   <div>

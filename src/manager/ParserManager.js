@@ -62,24 +62,31 @@ class ParserManager {
     }
 
     static _getNamedImports(imports) {
-        return imports.map(data => {
-            return data.namedImports;
-            //data.namedImports = []; // Clean namedImports, those will be replaced by absolute!
-            //return nameImport;
-        });
+        return imports.map(data => data.namedImports);
+    }
+
+    static _deleteElementsWithoutDefaultBinding(deleteList, parsedData) {
+        deleteList.forEach(elem => {
+            let index = parsedData.items.indexOf(elem);
+            parsedData.items.splice(index, 1);
+        })
     }
 
     static _sanitizeImportsAndSaveBindings(parsedData, defaultBindings) {
         let newParsedData = {...parsedData};
+        let shouldDelete = [];
 
-        newParsedData.items.forEach((i, index) => {
+        newParsedData.items.forEach(i => {
             if(i.type === ShiftConsts.IMPORT) {
                 if(!i.defaultBinding)
-                    newParsedData.items.splice(index, 1);
+                    shouldDelete.push(i);
                 else
                     i.namedImports = [];
             }
-        })
+
+        });
+
+        this._deleteElementsWithoutDefaultBinding(shouldDelete, newParsedData);
 
         defaultBindings.forEach(defBind => {
             newParsedData.items.unshift(defBind);
